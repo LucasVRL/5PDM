@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Image, Alert, Text } from 'react-native';
+import { View, TextInput, Button, Image, Alert, Text, BackHandler } from 'react-native';
 import { handleLogin } from '../handlers'
+import { getData, setData } from './asyncStorage';
 
 const SearchScreen = ({navigation}) => {
   const [cep, setCep] = useState('');
@@ -9,6 +10,14 @@ const SearchScreen = ({navigation}) => {
   const [cidade, setCidade] = useState('');
   const [uf, setUF] = useState('');
   const [validCep, setValidCep] = useState(false);
+
+  const handleBack = () => {
+    navigation.goBack();
+  }
+
+  const handleGoReport = () => {
+    navigation.navigate('ReportList')
+  }
 
   const fetchCEP = () => {
     try {
@@ -32,7 +41,12 @@ const SearchScreen = ({navigation}) => {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+        <Button title="Voltar" color='gray' onPress={handleBack} />
+        <Button title="Denúncias" color='gray' onPress={handleGoReport} />
+      </View>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Image
         source={require('../assets/logo.png')}
         style={{ width: 200, height: 200, marginBottom: 30 }}
@@ -61,8 +75,13 @@ const SearchScreen = ({navigation}) => {
       )}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '50%', marginTop: 10 }}>
         <Button title="Pesquisar CEP" onPress={fetchCEP} style={{marginTop: 10}}/>
-        <Button title="Continuar" onPress={() => { navigation.navigate("GarbageDescription") }} disabled={( !validCep )} style={{marginTop: 10}}/>
+        <Button title="Continuar" onPress={() => {
+           setData('reportCep', cep);
+           setData('reportStreet', logradouro);
+           navigation.navigate("GarbageDescription") 
+        }} disabled={( !validCep )} style={{marginTop: 10}}/>
       </View>
+    </View>
     </View>
   );
 };

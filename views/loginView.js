@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Image, Alert, Touchable } from 'react-native';
+import { View, TextInput, Button, Image, Alert, Touchable, Text } from 'react-native';
 import { auth, signInWithEmailAndPassword } from '../services/firebaseConfig';
 import { SearchScreen } from './searchView'
 import { RegisterScreen } from './registeView'
+import { getData, setData } from './asyncStorage';
 
 const errors = {
     "auth/invalid-email": "Email Inválido!",
@@ -16,24 +17,20 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
+      setData('user', userCredential.user);
+       setData('userEmail', email);
        navigation.navigate("Search");
     })
     .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-    });
-
-    /*
-    if (email === 'teste@teste.com' && password === 'senha123') {
-      navigation.navigate('Search');
-    } else {
-      return false
-    }
-    */
+        alert(errors[errorCode])
+    });''
   };
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Image
         source={require('../assets/logo.png')}
         style={{ width: 200, height: 200, marginBottom: 30 }}
@@ -69,6 +66,7 @@ const LoginScreen = ({navigation}) => {
         <Button title="Continuar" color='green' onPress={handleLogin} />
         <Button title="Cadastrar-se" onPress={() => { navigation.navigate("Register") }} />
       </View>
+    </View>
     </View>
   );
 };
